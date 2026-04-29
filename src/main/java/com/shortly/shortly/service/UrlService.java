@@ -40,6 +40,16 @@ public class UrlService {
     }
 
     private String generateShortCode(){
+        String code;
+
+        do{
+            code = randomString();
+        }while (repo.findByShortCode(code).isPresent());
+
+        return code;
+    }
+
+    private String randomString(){
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
