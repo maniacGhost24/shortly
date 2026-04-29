@@ -1,0 +1,60 @@
+# =========================
+# Java / Maven
+# =========================
+target/
+*.log
+*.class
+
+# Maven wrapper logs
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# IDE files
+# =========================
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Environment variables
+# =========================
+.env
+
+# =========================
+# Docker (optional)
+# =========================
+# Uncomment if you later add local-only docker overrides
+# docker-compose.override.yml
+
+# =========================
+# Build artifacts
+# =========================
+*.jar
+*.war
+*.ear
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+*.tmp
