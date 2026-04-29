@@ -18,13 +18,18 @@ public class UrlService {
 
     public String shortenUrl(String originalUrl){
         
-        String shortCode = generateShortCode();
-
+        // Step 1: save without shortcode
         Url url = new Url();
         url.setOriginalUrl(originalUrl);
-        url.setShortCode(shortCode);
         url.setClickCount(0L);
 
+        url = repo.save(url);   // Database assigns ID
+
+        // Step 2: generate Short code from ID
+        String shortCode = encodeBase62(url.getId());
+
+        // Step 3: update entity
+        url.setShortCode(shortCode);
         repo.save(url);
 
         return shortCode;
@@ -39,25 +44,26 @@ public class UrlService {
         return url.getOriginalUrl();
     }
 
-    private String generateShortCode(){
-        String code;
+    // private String generateShortCode(){
+    //     String code;
 
-        do{
-            code = randomString();
-        }while (repo.findByShortCode(code).isPresent());
+    //     do{
+    //         code = randomString();
+    //     }while (repo.findByShortCode(code).isPresent());
 
-        return code;
-    }
+    //     return code;
+    // }
 
-    private String randomString(){
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    
+    public String encodeBase62(long num){
         StringBuilder sb = new StringBuilder();
-        Random random = new Random();
 
-        for(int i=0;i<6;i++){
-            sb.append(chars.charAt(random.nextInt(chars.length())));
+        while(num>0){
+            sb.append(BASE62.charAt((int)(num%62)));
+            num/=62;
         }
 
-        return sb.toString();
+        return sb.reverse().toString();
     }
 }

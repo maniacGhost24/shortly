@@ -1,6 +1,7 @@
 package com.shortly.shortly.controller;
 
 import org.springframework.http.ResponseEntity;
+// import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.shortly.shortly.dto.ShortenReponse;
+import com.shortly.shortly.dto.ShortenRequest;
 import com.shortly.shortly.service.UrlService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpHeaders;
 
 @RestController
 @RequestMapping("/api")
@@ -22,15 +29,15 @@ public class UrlController {
     }
 
     @PostMapping("/shorten")
-    public String shorten(@RequestBody String url){
-        String code = service.shortenUrl(url);
-        return "http://localhost:8080/api/"+code;
+    public ShortenReponse shorten(@Valid @RequestBody ShortenRequest request){
+        String code = service.shortenUrl(request.getUrl());
+        return new ShortenReponse("http://localhost:8080/api/" + code);
     }
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<?> redirect(@PathVariable String shortCode){
         String originalUrl = service.getOriginalUrl(shortCode);
 
-        return ResponseEntity.status(302).header("Location", originalUrl).build();
+        return ResponseEntity.status(302).header(HttpHeaders.LOCATION, originalUrl).build();
     }
 }
