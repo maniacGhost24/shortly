@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
+import com.shortly.shortly.exception.UrlNotFoundException;
 import com.shortly.shortly.model.Url;
 import com.shortly.shortly.repository.UrlRepository;
 
@@ -36,7 +37,7 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String shortCode){
-        Url url = repo.findByShortCode(shortCode).orElseThrow(() -> new RuntimeException("URL NOT FOUND!!"));
+        Url url = repo.findByShortCode(shortCode).orElseThrow(() -> new UrlNotFoundException("URL NOT FOUND!!"));
 
         url.setClickCount(url.getClickCount() + 1);
         repo.save(url);
