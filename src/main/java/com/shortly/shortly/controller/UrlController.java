@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.shortly.shortly.dto.ShortenReponse;
 import com.shortly.shortly.dto.ShortenRequest;
+import com.shortly.shortly.dto.StatsResponse;
 import com.shortly.shortly.service.UrlService;
 
 import jakarta.validation.Valid;
@@ -39,5 +40,10 @@ public class UrlController {
         String originalUrl = service.getOriginalUrl(shortCode);
 
         return ResponseEntity.status(302).header(HttpHeaders.LOCATION, originalUrl).build();
+    }
+
+    @GetMapping("/stats/{shortCode}")
+    public StatsResponse getStats(@PathVariable String shortCode){
+        return service.getStats(shortCode);
     }
 }
