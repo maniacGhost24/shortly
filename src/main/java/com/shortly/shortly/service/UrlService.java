@@ -1,9 +1,13 @@
 package com.shortly.shortly.service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.shortly.shortly.dto.StatsResponse;
 import com.shortly.shortly.exception.UrlNotFoundException;
@@ -15,10 +19,14 @@ public class UrlService {
 
     private final UrlRepository repo;
 
+    // Add a basic cache.
+    private final Map<String, String> cache = new ConcurrentHashMap<>();
+
     public UrlService(UrlRepository repo) {
         this.repo = repo;
     }
 
+    @Transactional
     public String shortenUrl(String originalUrl) {
 
         // Step 1: save without shortcode
@@ -26,25 +34,33 @@ public class UrlService {
         url.setOriginalUrl(originalUrl);
         url.setClickCount(0L);
 
-        url = repo.save(url); // Database assigns ID
+        repo.save(url); // Database assigns ID
 
         // Step 2: generate Short code from ID
         String shortCode = encodeBase62(url.getId());
 
         // Step 3: update entity
         url.setShortCode(shortCode);
-        repo.save(url);
+        // repo.save(url);
 
         return shortCode;
     }
 
+    @Transactional
     public String getOriginalUrl(String shortCode) {
+
+        if (cache.containsKey(shortCode)){
+            return cache.get(shortCode);
+        }
+
         Url url = repo.findByShortCode(shortCode).orElseThrow(() -> new UrlNotFoundException("URL NOT FOUND!!"));
+
+        cache.put(shortCode, url.getOriginalUrl());
 
         url.setClickCount(url.getClickCount() + 1);
 
         url.setLastAccessed(LocalDateTime.now());
-        repo.save(url);
+        // repo.save(url);
 
         return url.getOriginalUrl();
     }
