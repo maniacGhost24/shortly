@@ -17,6 +17,7 @@ import com.shortly.shortly.service.UrlService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 
 @RestController
@@ -25,6 +26,9 @@ public class UrlController {
     
     private final UrlService service;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public UrlController(UrlService service){
         this.service = service;
     }
@@ -32,7 +36,7 @@ public class UrlController {
     @PostMapping("/shorten")
     public ShortenReponse shorten(@Valid @RequestBody ShortenRequest request){
         String code = service.shortenUrl(request.getUrl());
-        return new ShortenReponse("http://localhost:8080/api/" + code);
+        return new ShortenReponse(baseUrl+"/api/" + code);
     }
 
     @GetMapping("/{shortCode}")
